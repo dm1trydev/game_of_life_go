@@ -20,7 +20,7 @@ func main() {
 		grid[i] = make([]int, N)
 
 		for j := range grid[i] {
-			if rand.Float32() > 0.3 {
+			if rand.Float32() > 0.7 {
 				grid[i][j] = 1
 			} else {
 				grid[i][j] = 0
@@ -28,7 +28,7 @@ func main() {
 		}
 	}
 
-	rl.SetTargetFPS(10)
+	rl.SetTargetFPS(5)
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
 
@@ -79,46 +79,21 @@ func main() {
 }
 
 func cellNeighboursCount(gridRef *[][]int, i, j int) int {
-	count := 0
 	grid := (*gridRef)
 
-	// above left
-	if i > 0 && j > 0 && grid[i - 1][j - 1] == 1 {
-		count += 1
-	}
-	// above
-	if i > 0 && grid[i - 1][j] == 1 {
-		count += 1
-	}
-	// above right
-	if i > 0 && j < N - 1 && grid[i - 1][j + 1] == 1 {
-		count += 1
-	}
+	return grid[mathRemainder(i - 1)][mathRemainder(j - 1)] +
+		grid[mathRemainder(i - 1)][j] +
+		grid[mathRemainder(i - 1)][mathRemainder(j + 1)] +
+		grid[i][mathRemainder(j - 1)] +
+		grid[i][mathRemainder(j + 1)] +
+		grid[mathRemainder(i + 1)][mathRemainder(j - 1)] +
+		grid[mathRemainder(i + 1)][j] +
+		grid[mathRemainder(i + 1)][mathRemainder(j + 1)]
+}
 
-	// left
-	if j > 0 && grid[i][j - 1] == 1 {
-		count += 1
-	}
-	//right
-	if j < N - 1 && grid[i][j + 1] == 1 {
-		count += 1
-	}
-
-	// below left
-	if i < N - 1 && j > 0 && grid[i + 1][j - 1] == 1 {
-		count += 1
-	}
-	// below
-	if i < N - 1 && grid[i + 1][j] == 1 {
-		count += 1
-	}
-	// below right
-	if i < N - 1 && j < N - 1 && grid[i + 1][j + 1] == 1 {
-		count += 1
-	}
-
-
-	return count
+func mathRemainder(divident int) int {
+	divisor := N
+	return ((divident % divisor) + divisor) % divisor
 }
 
 func isGameOver(grid *[][]int) bool {
